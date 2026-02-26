@@ -42,18 +42,18 @@ export async function GET(request: NextRequest) {
     const tournaments = await db.tournament.findMany({
       where,
       include: {
-        creator: {
+        sport: {
           select: {
             id: true,
             name: true,
-            email: true,
+            icon: true,
           }
         },
-        ground: {
+        winner: {
           select: {
             id: true,
             name: true,
-            address: true,
+            shortName: true,
             area: true,
           }
         },
@@ -127,18 +127,18 @@ export async function POST(request: NextRequest) {
         platformFee: Math.round(prizePool * 0.1), // 10% commission
       },
       include: {
-        creator: {
+        sport: {
           select: {
             id: true,
             name: true,
-            email: true,
+            icon: true,
           }
         },
-        ground: {
+        winner: {
           select: {
             id: true,
             name: true,
-            address: true,
+            shortName: true,
             area: true,
           }
         }

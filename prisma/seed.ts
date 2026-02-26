@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs'
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('🌱 Seeding StreetSports Pro database...')
+  console.log('🌱 Creating comprehensive demo data for StreetSports Pro...')
 
   // Create sports
   const cricket = await prisma.sport.upsert({
@@ -59,7 +59,7 @@ async function main() {
     },
   })
 
-  // Create admin user
+  // Create admin and manager users
   const adminUser = await prisma.user.upsert({
     where: { email: 'admin@streetsports.pro' },
     update: {},
@@ -71,7 +71,7 @@ async function main() {
     },
   })
 
-  // Create team managers for different sports
+  // Cricket managers
   const cricketManager1 = await prisma.user.upsert({
     where: { email: 'rahul@cricket.com' },
     update: {},
@@ -96,128 +96,230 @@ async function main() {
     },
   })
 
-  const footballManager1 = await prisma.user.upsert({
-    where: { email: 'amit@football.com' },
+  const cricketManager3 = await prisma.user.upsert({
+    where: { email: 'amit@cricket.com' },
     update: {},
     create: {
-      email: 'amit@football.com',
+      email: 'amit@cricket.com',
       name: 'Amit Singh',
-      phone: '+919876543212',
+      phone: '+919876543222',
+      role: 'TEAM_MANAGER',
+      isVerified: false,
+    },
+  })
+
+  // Football managers
+  const footballManager1 = await prisma.user.upsert({
+    where: { email: 'raj@football.com' },
+    update: {},
+    create: {
+      email: 'raj@football.com',
+      name: 'Raj Verma',
+      phone: '+919876543223',
       role: 'TEAM_MANAGER',
       isVerified: true,
     },
   })
 
   const footballManager2 = await prisma.user.upsert({
-    where: { email: 'raj@football.com' },
+    where: { email: 'karim@football.com' },
     update: {},
     create: {
-      email: 'raj@football.com',
-      name: 'Raj Verma',
-      phone: '+919876543213',
+      email: 'karim@football.com',
+      name: 'Karim Khan',
+      phone: '+919876543224',
       role: 'TEAM_MANAGER',
-      isVerified: false,
+      isVerified: true,
     },
   })
 
+  // Badminton managers
   const badmintonManager1 = await prisma.user.upsert({
     where: { email: 'priya@badminton.com' },
     update: {},
     create: {
       email: 'priya@badminton.com',
       name: 'Priya Sharma',
-      phone: '+919876543214',
+      phone: '+919876543225',
       role: 'TEAM_MANAGER',
       isVerified: true,
     },
   })
 
-  // Create cricket teams
-  const cricketTeam1 = await prisma.team.create({
-    data: {
+  const badmintonManager2 = await prisma.user.upsert({
+    where: { email: 'sneha@badminton.com' },
+    update: {},
+    create: {
+      email: 'sneha@badminton.com',
+      name: 'Sneha Patel',
+      phone: '+919876543226',
+      role: 'TEAM_MANAGER',
+      isVerified: false,
+    },
+  })
+
+  // Volleyball managers
+  const volleyballManager1 = await prisma.user.upsert({
+    where: { email: 'anil@volleyball.com' },
+    update: {},
+    create: {
+      email: 'anil@volleyball.com',
+      name: 'Anil Kumar',
+      phone: '+919876543227',
+      role: 'TEAM_MANAGER',
+      isVerified: true,
+    },
+  })
+
+  // Create Cricket Teams
+  const cricketTeams = [
+    {
       name: 'Janakpuri Cricket Club',
       shortName: 'JCC',
       description: 'Professional cricket team from Janakpuri with 5+ years of experience',
-      sportId: cricket.id,
       area: 'Janakpuri',
-      city: 'Delhi',
       isVerified: true,
       rating: 1350,
       managerId: cricketManager1.id,
     },
-  })
-
-  const cricketTeam2 = await prisma.team.create({
-    data: {
+    {
       name: 'Dwarka Warriors',
       shortName: 'DWW',
       description: 'Rising cricket team from Dwarka sector 12',
-      sportId: cricket.id,
       area: 'Dwarka',
-      city: 'Delhi',
       isVerified: true,
       rating: 1280,
       managerId: cricketManager2.id,
     },
-  })
+    {
+      name: 'Tilak Nagar Titans',
+      shortName: 'TNT',
+      description: 'Aggressive young team from Tilak Nagar',
+      area: 'Tilak Nagar',
+      isVerified: false,
+      rating: 1150,
+      managerId: cricketManager3.id,
+    },
+  ]
 
-  // Create football teams
-  const footballTeam1 = await prisma.team.create({
-    data: {
+  const createdCricketTeams = []
+  for (const teamData of cricketTeams) {
+    const team = await prisma.team.create({
+      data: {
+        ...teamData,
+        sportId: cricket.id,
+        city: 'Delhi',
+      },
+    })
+    createdCricketTeams.push(team)
+  }
+
+  // Create Football Teams
+  const footballTeams = [
+    {
       name: 'Janakpuri United',
       shortName: 'JU',
       description: 'Passionate football team from Janakpuri',
-      sportId: football.id,
       area: 'Janakpuri',
-      city: 'Delhi',
       isVerified: true,
       rating: 1420,
       managerId: footballManager1.id,
     },
-  })
-
-  const footballTeam2 = await prisma.team.create({
-    data: {
+    {
       name: 'Dwarka FC',
       shortName: 'DFC',
       description: 'Fast-growing football club from Dwarka',
-      sportId: football.id,
       area: 'Dwarka',
-      city: 'Delhi',
       isVerified: false,
       rating: 1180,
       managerId: footballManager2.id,
     },
-  })
+  ]
 
-  // Create badminton teams
-  const badmintonTeam1 = await prisma.team.create({
-    data: {
+  const createdFootballTeams = []
+  for (const teamData of footballTeams) {
+    const team = await prisma.team.create({
+      data: {
+        ...teamData,
+        sportId: football.id,
+        city: 'Delhi',
+      },
+    })
+    createdFootballTeams.push(team)
+  }
+
+  // Create Badminton Teams
+  const badmintonTeams = [
+    {
       name: 'Smashers Janakpuri',
       shortName: 'SJ',
       description: 'Competitive badminton team from Janakpuri',
-      sportId: badminton.id,
       area: 'Janakpuri',
-      city: 'Delhi',
       isVerified: true,
       rating: 1500,
       managerId: badmintonManager1.id,
     },
-  })
+    {
+      name: 'Dwarka Racquets',
+      shortName: 'DR',
+      description: 'Skilled badminton players from Dwarka',
+      area: 'Dwarka',
+      isVerified: false,
+      rating: 1250,
+      managerId: badmintonManager2.id,
+    },
+  ]
 
-  // Create cricket players
+  const createdBadmintonTeams = []
+  for (const teamData of badmintonTeams) {
+    const team = await prisma.team.create({
+      data: {
+        ...teamData,
+        sportId: badminton.id,
+        city: 'Delhi',
+      },
+    })
+    createdBadmintonTeams.push(team)
+  }
+
+  // Create Volleyball Teams
+  const volleyballTeams = [
+    {
+      name: 'Janakpuri Spikers',
+      shortName: 'JS',
+      description: 'Powerful volleyball team from Janakpuri',
+      area: 'Janakpuri',
+      isVerified: true,
+      rating: 1380,
+      managerId: volleyballManager1.id,
+    },
+  ]
+
+  const createdVolleyballTeams = []
+  for (const teamData of volleyballTeams) {
+    const team = await prisma.team.create({
+      data: {
+        ...teamData,
+        sportId: volleyball.id,
+        city: 'Delhi',
+      },
+    })
+    createdVolleyballTeams.push(team)
+  }
+
+  // Create Cricket Players
   const cricketPlayers1 = [
-    { name: 'Rahul Sharma', role: 'ALL_ROUNDER', jerseyNumber: 1 },
-    { name: 'Vikram Malhotra', role: 'BATSMAN', jerseyNumber: 2 },
-    { name: 'Suresh Kumar', role: 'BOWLER', jerseyNumber: 3 },
-    { name: 'Amit Patel', role: 'WICKET_KEEPER', jerseyNumber: 4 },
-    { name: 'Rohit Verma', role: 'BATSMAN', jerseyNumber: 5 },
-    { name: 'Karan Singh', role: 'ALL_ROUNDER', jerseyNumber: 6 },
-    { name: 'Piyush Sharma', role: 'BOWLER', jerseyNumber: 7 },
-    { name: 'Naveen Kumar', role: 'BATSMAN', jerseyNumber: 8 },
-    { name: 'Deepak Singh', role: 'BOWLER', jerseyNumber: 9 },
-    { name: 'Manish Jain', role: 'ALL_ROUNDER', jerseyNumber: 10 },
-    { name: 'Ravi Chaudhary', role: 'BOWLER', jerseyNumber: 11 },
+    { name: 'Rahul Sharma', role: 'ALL_ROUNDER', jerseyNumber: 1, battingAvg: 45.2, strikeRate: 135.5, totalRuns: 1250, totalWickets: 45, economy: 7.2 },
+    { name: 'Vikram Malhotra', role: 'BATSMAN', jerseyNumber: 2, battingAvg: 38.5, strikeRate: 125.3, totalRuns: 980, totalWickets: 0, economy: 0 },
+    { name: 'Suresh Kumar', role: 'BOWLER', jerseyNumber: 3, battingAvg: 15.2, strikeRate: 85.5, totalRuns: 320, totalWickets: 68, economy: 6.8 },
+    { name: 'Amit Patel', role: 'WICKET_KEEPER', jerseyNumber: 4, battingAvg: 42.1, strikeRate: 118.9, totalRuns: 1100, totalWickets: 0, economy: 0 },
+    { name: 'Rohit Verma', role: 'BATSMAN', jerseyNumber: 5, battingAvg: 35.8, strikeRate: 142.1, totalRuns: 890, totalWickets: 0, economy: 0 },
+    { name: 'Karan Singh', role: 'ALL_ROUNDER', jerseyNumber: 6, battingAvg: 28.5, strikeRate: 128.7, totalRuns: 650, totalWickets: 35, economy: 7.5 },
+    { name: 'Piyush Sharma', role: 'BOWLER', jerseyNumber: 7, battingAvg: 12.3, strikeRate: 78.2, totalRuns: 180, totalWickets: 72, economy: 6.5 },
+    { name: 'Naveen Kumar', role: 'BATSMAN', jerseyNumber: 8, battingAvg: 32.1, strikeRate: 135.8, totalRuns: 720, totalWickets: 0, economy: 0 },
+    { name: 'Deepak Singh', role: 'BOWLER', jerseyNumber: 9, battingAvg: 18.7, strikeRate: 92.3, totalRuns: 280, totalWickets: 58, economy: 7.8 },
+    { name: 'Manish Jain', role: 'ALL_ROUNDER', jerseyNumber: 10, battingAvg: 25.4, strikeRate: 118.5, totalRuns: 580, totalWickets: 28, economy: 8.1 },
+    { name: 'Ravi Chaudhary', role: 'BOWLER', jerseyNumber: 11, battingAvg: 8.9, strikeRate: 65.4, totalRuns: 120, totalWickets: 85, economy: 6.2 },
   ]
 
   for (const player of cricketPlayers1) {
@@ -225,29 +327,24 @@ async function main() {
       data: {
         ...player,
         sportId: cricket.id,
-        teamId: cricketTeam1.id,
-        battingAvg: Math.random() * 40 + 20,
-        strikeRate: Math.random() * 100 + 80,
-        totalRuns: Math.floor(Math.random() * 500),
-        totalWickets: Math.floor(Math.random() * 30),
-        economy: Math.random() * 3 + 6,
+        teamId: createdCricketTeams[0].id,
       },
     })
   }
 
-  // Create football players
+  // Create Football Players
   const footballPlayers1 = [
-    { name: 'Amit Singh', role: 'GOALKEEPER', jerseyNumber: 1 },
-    { name: 'Raj Verma', role: 'DEFENDER', jerseyNumber: 2 },
-    { name: 'Vikram Kumar', role: 'DEFENDER', jerseyNumber: 3 },
-    { name: 'Suresh Sharma', role: 'DEFENDER', jerseyNumber: 4 },
-    { name: 'Mohit Singh', role: 'MIDFIELDER', jerseyNumber: 5 },
-    { name: 'Rohit Kumar', role: 'MIDFIELDER', jerseyNumber: 6 },
-    { name: 'Pankaj Verma', role: 'MIDFIELDER', jerseyNumber: 7 },
-    { name: 'Naveen Sharma', role: 'FORWARD', jerseyNumber: 8 },
-    { name: 'Deepak Kumar', role: 'FORWARD', jerseyNumber: 9 },
-    { name: 'Manish Singh', role: 'FORWARD', jerseyNumber: 10 },
-    { name: 'Ravi Jain', role: 'ATTACKER', jerseyNumber: 11 },
+    { name: 'Raj Verma', role: 'GOALKEEPER', jerseyNumber: 1, goalsScored: 0, assists: 0, cleanSheets: 12 },
+    { name: 'Vikram Kumar', role: 'DEFENDER', jerseyNumber: 2, goalsScored: 3, assists: 2, cleanSheets: 0 },
+    { name: 'Suresh Sharma', role: 'DEFENDER', jerseyNumber: 3, goalsScored: 2, assists: 4, cleanSheets: 0 },
+    { name: 'Mohit Singh', role: 'DEFENDER', jerseyNumber: 4, goalsScored: 1, assists: 3, cleanSheets: 0 },
+    { name: 'Rohit Kumar', role: 'MIDFIELDER', jerseyNumber: 5, goalsScored: 8, assists: 12, cleanSheets: 0 },
+    { name: 'Pankaj Verma', role: 'MIDFIELDER', jerseyNumber: 6, goalsScored: 6, assists: 8, cleanSheets: 0 },
+    { name: 'Naveen Sharma', role: 'MIDFIELDER', jerseyNumber: 7, goalsScored: 10, assists: 15, cleanSheets: 0 },
+    { name: 'Deepak Kumar', role: 'FORWARD', jerseyNumber: 8, goalsScored: 18, assists: 6, cleanSheets: 0 },
+    { name: 'Manish Singh', role: 'FORWARD', jerseyNumber: 9, goalsScored: 22, assists: 4, cleanSheets: 0 },
+    { name: 'Ravi Jain', role: 'ATTACKER', jerseyNumber: 10, goalsScored: 25, assists: 8, cleanSheets: 0 },
+    { name: 'Amit Kumar', role: 'FORWARD', jerseyNumber: 11, goalsScored: 15, assists: 10, cleanSheets: 0 },
   ]
 
   for (const player of footballPlayers1) {
@@ -255,19 +352,15 @@ async function main() {
       data: {
         ...player,
         sportId: football.id,
-        teamId: footballTeam1.id,
-        goalsScored: Math.floor(Math.random() * 20),
-        assists: Math.floor(Math.random() * 15),
-        cleanSheets: Math.floor(Math.random() * 5),
+        teamId: createdFootballTeams[0].id,
       },
     })
   }
 
-  // Create badminton players
+  // Create Badminton Players
   const badmintonPlayers1 = [
-    { name: 'Priya Sharma', role: 'ATTACKER', jerseyNumber: 1 },
-    { name: 'Anita Verma', role: 'DEFENDER', jerseyNumber: 2 },
-    { name: 'Kavita Singh', role: 'ATTACKER', jerseyNumber: 3 },
+    { name: 'Priya Sharma', role: 'ATTACKER', jerseyNumber: 1, setsWon: 45, tournamentPoints: 890 },
+    { name: 'Anita Verma', role: 'DEFENDER', jerseyNumber: 2, setsWon: 38, tournamentPoints: 720 },
   ]
 
   for (const player of badmintonPlayers1) {
@@ -275,9 +368,27 @@ async function main() {
       data: {
         ...player,
         sportId: badminton.id,
-        teamId: badmintonTeam1.id,
-        setsWon: Math.floor(Math.random() * 30),
-        tournamentPoints: Math.floor(Math.random() * 500),
+        teamId: createdBadmintonTeams[0].id,
+      },
+    })
+  }
+
+  // Create Volleyball Players
+  const volleyballPlayers1 = [
+    { name: 'Anil Kumar', role: 'MIDDLE_BLOCKER', jerseyNumber: 1, setsWon: 28, tournamentPoints: 450 },
+    { name: 'Rajesh Singh', role: 'OUTSIDE_HITTER', jerseyNumber: 2, setsWon: 32, tournamentPoints: 520 },
+    { name: 'Vikram Sharma', role: 'SETTER', jerseyNumber: 3, setsWon: 25, tournamentPoints: 380 },
+    { name: 'Mohit Kumar', role: 'OPPONENT', jerseyNumber: 4, setsWon: 30, tournamentPoints: 480 },
+    { name: 'Amit Verma', role: 'LIBERO', jerseyNumber: 5, setsWon: 22, tournamentPoints: 320 },
+    { name: 'Suresh Singh', role: 'MIDDLE_BLOCKER', jerseyNumber: 6, setsWon: 26, tournamentPoints: 410 },
+  ]
+
+  for (const player of volleyballPlayers1) {
+    await prisma.player.create({
+      data: {
+        ...player,
+        sportId: volleyball.id,
+        teamId: createdVolleyballTeams[0].id,
       },
     })
   }
@@ -331,6 +442,21 @@ async function main() {
       capacity: 100,
       description: 'Professional football turf with floodlights',
     },
+    {
+      name: 'Dwarka Football Arena',
+      address: 'Sector 8, Dwarka, New Delhi',
+      area: 'Dwarka',
+      sportId: football.id,
+      pricePerSlot: 1000,
+      surfaceType: 'Artificial Grass',
+      hasFloodlights: true,
+      hasPavilion: false,
+      hasNets: false,
+      hasGoals: true,
+      hasNet: false,
+      capacity: 80,
+      description: 'Modern football arena with artificial grass',
+    },
     // Badminton venues
     {
       name: 'Janakpuri Badminton Court',
@@ -347,21 +473,55 @@ async function main() {
       capacity: 50,
       description: 'Indoor badminton court with proper lighting',
     },
+    {
+      name: 'Dwarka Badminton Hall',
+      address: 'Sports Complex, Dwarka, New Delhi',
+      area: 'Dwarka',
+      sportId: badminton.id,
+      pricePerSlot: 900,
+      surfaceType: 'Wooden',
+      hasFloodlights: true,
+      hasPavilion: false,
+      hasNets: false,
+      hasGoals: false,
+      hasNet: true,
+      capacity: 60,
+      description: 'Professional wooden badminton hall',
+    },
+    // Volleyball venues
+    {
+      name: 'Janakpuri Volleyball Court',
+      address: 'Sports Ground, Janakpuri, New Delhi',
+      area: 'Janakpuri',
+      sportId: volleyball.id,
+      pricePerSlot: 1000,
+      surfaceType: 'Sand',
+      hasFloodlights: true,
+      hasPavilion: false,
+      hasNets: false,
+      hasGoals: false,
+      hasNet: true,
+      capacity: 100,
+      description: 'Beach volleyball court with floodlights',
+    },
   ]
 
+  const createdVenues = []
   for (const venue of venues) {
-    await prisma.ground.create({
+    const ground = await prisma.ground.create({
       data: venue,
     })
+    createdVenues.push(ground)
   }
 
-  // Create sample matches for different sports
+  // Create sample matches
   const cricketMatch = await prisma.match.create({
     data: {
-      title: 'JCC vs DWW - Cricket Match',
-      homeTeamId: cricketTeam1.id,
-      awayTeamId: cricketTeam2.id,
+      title: 'JCC vs DWW - T20 Championship',
+      homeTeamId: createdCricketTeams[0].id,
+      awayTeamId: createdCricketTeams[1].id,
       sportId: cricket.id,
+      groundId: createdVenues[0].id,
       scheduledDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
       scheduledTime: '18:00',
       matchFormat: 'T20',
@@ -375,10 +535,11 @@ async function main() {
 
   const footballMatch = await prisma.match.create({
     data: {
-      title: 'JU vs DFC - Football Match',
-      homeTeamId: footballTeam1.id,
-      awayTeamId: footballTeam2.id,
+      title: 'JU vs DFC - Football Derby',
+      homeTeamId: createdFootballTeams[0].id,
+      awayTeamId: createdFootballTeams[1].id,
       sportId: football.id,
+      groundId: createdVenues[2].id,
       scheduledDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days from now
       scheduledTime: '17:00',
       matchFormat: 'FOOTBALL_7',
@@ -390,18 +551,51 @@ async function main() {
     },
   })
 
+  const badmintonMatch = await prisma.match.create({
+    data: {
+      title: 'SJ vs DR - Badminton Singles',
+      homeTeamId: createdBadmintonTeams[0].id,
+      awayTeamId: createdBadmintonTeams[1].id,
+      sportId: badminton.id,
+      groundId: createdVenues[4].id,
+      scheduledDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days from now
+      scheduledTime: '19:00',
+      matchFormat: 'BADMINTON_SINGLES',
+      status: 'SCHEDULED',
+      entryFee: 3000,
+      prizePool: 6000,
+      platformFee: 600,
+      createdBy: adminUser.id,
+    },
+  })
+
+  const volleyballMatch = await prisma.match.create({
+    data: {
+      title: 'JS vs JS - Volleyball Practice Match',
+      homeTeamId: createdVolleyballTeams[0].id,
+      awayTeamId: createdVolleyballTeams[0].id, // Same team for practice
+      sportId: volleyball.id,
+      groundId: createdVenues[6].id,
+      scheduledDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000), // 10 days from now
+      scheduledTime: '16:00',
+      matchFormat: 'VOLLEYBALL_INDOOR',
+      status: 'SCHEDULED',
+      entryFee: 5000,
+      prizePool: 10000,
+      platformFee: 1000,
+      createdBy: adminUser.id,
+    },
+  })
+
   // Create area rankings
-  const areas = ['Janakpuri', 'Dwarka', 'Tilak Nagar']
-  const sports = [cricket, football, badminton]
-  const teams = [
-    { team: cricketTeam1, sport: cricket, area: 'Janakpuri' },
-    { team: cricketTeam2, sport: cricket, area: 'Dwarka' },
-    { team: footballTeam1, sport: football, area: 'Janakpuri' },
-    { team: footballTeam2, sport: football, area: 'Dwarka' },
-    { team: badmintonTeam1, sport: badminton, area: 'Janakpuri' },
+  const allTeams = [
+    ...createdCricketTeams.map(team => ({ team, sport: cricket, area: team.area })),
+    ...createdFootballTeams.map(team => ({ team, sport: football, area: team.area })),
+    ...createdBadmintonTeams.map(team => ({ team, sport: badminton, area: team.area })),
+    ...createdVolleyballTeams.map(team => ({ team, sport: volleyball, area: team.area })),
   ]
 
-  for (const { team, sport, area } of teams) {
+  for (const { team, sport, area } of allTeams) {
     await prisma.areaRanking.create({
       data: {
         area,
@@ -417,21 +611,125 @@ async function main() {
     })
   }
 
-  console.log('✅ StreetSports Pro database seeded successfully!')
+  // Create tournaments
+  const cricketTournament = await prisma.tournament.create({
+    data: {
+      name: 'Delhi Cricket Championship 2024',
+      description: 'Premier cricket tournament for Delhi teams',
+      sportId: cricket.id,
+      format: 'KNOCKOUT',
+      maxTeams: 8,
+      entryFee: 15000,
+      prizePool: 120000,
+      startDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+      endDate: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000),
+      status: 'UPCOMING',
+      createdBy: adminUser.id,
+    },
+  })
+
+  const footballTournament = await prisma.tournament.create({
+    data: {
+      name: 'NCR Football League 2024',
+      description: 'Competitive football league for NCR teams',
+      sportId: football.id,
+      format: 'LEAGUE',
+      maxTeams: 6,
+      entryFee: 10000,
+      prizePool: 60000,
+      startDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      endDate: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
+      status: 'UPCOMING',
+      createdBy: adminUser.id,
+    },
+  })
+
+  // Create challenges
+  await prisma.challenge.create({
+    data: {
+      challengingTeamId: createdCricketTeams[0].id,
+      challengedTeamId: createdCricketTeams[1].id,
+      matchId: cricketMatch.id,
+      message: 'Want to play a competitive T20 match this weekend?',
+      proposedDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      proposedTime: '18:00',
+      proposedFormat: 'T20',
+      status: 'ACCEPTED',
+      respondedAt: new Date(),
+    },
+  })
+
+  await prisma.challenge.create({
+    data: {
+      challengingTeamId: createdFootballTeams[0].id,
+      message: 'Open challenge for any 7-a-side football team',
+      proposedDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
+      proposedTime: '17:00',
+      proposedFormat: 'FOOTBALL_7',
+      status: 'PENDING',
+      expiresAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+    },
+  })
+
+  // Create payments
+  await prisma.payment.create({
+    data: {
+      userId: cricketManager1.id,
+      teamId: createdCricketTeams[0].id,
+      matchId: cricketMatch.id,
+      type: 'MATCH_ENTRY',
+      amount: 10000,
+      status: 'COMPLETED',
+      method: 'UPI',
+      transactionId: 'TXN_CRICKET_001',
+    },
+  })
+
+  await prisma.payment.create({
+    data: {
+      userId: footballManager1.id,
+      teamId: createdFootballTeams[0].id,
+      matchId: footballMatch.id,
+      type: 'MATCH_ENTRY',
+      amount: 8000,
+      status: 'COMPLETED',
+      method: 'RAZORPAY',
+      transactionId: 'TXN_FOOTBALL_001',
+    },
+  })
+
+  // Create media coverage
+  await prisma.mediaCoverage.create({
+    data: {
+      matchId: cricketMatch.id,
+      journalistId: adminUser.id,
+      title: 'JCC vs DWW: The Ultimate Cricket Showdown',
+      content: 'An exciting match between two top cricket teams in Janakpuri. Both teams have been performing exceptionally well this season.',
+      mediaType: 'ARTICLE',
+      isPublished: true,
+      publishedAt: new Date(),
+    },
+  })
+
+  console.log('✅ Comprehensive demo data created successfully!')
   console.log(`📊 Created:
   - 4 sports (Cricket, Football, Badminton, Volleyball)
-  - 5 users (1 admin, 4 managers)
-  - 6 teams (2 cricket, 2 football, 1 badminton, 1 volleyball)
-  - 27 players across different sports
-  - 4 venues for different sports
-  - 2 matches (cricket and football)
-  - 5 area rankings
+  - 9 users (1 admin, 8 managers)
+  - 8 teams (3 cricket, 2 football, 2 badminton, 1 volleyball)
+  - 32 players across different sports
+  - 7 venues for different sports
+  - 4 matches (cricket, football, badminton, volleyball)
+  - 2 tournaments
+  - 2 challenges
+  - 2 payments
+  - 1 media coverage
+  - 8 area rankings
   `)
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Error seeding database:', e)
+    console.error('❌ Error creating demo data:', e)
     process.exit(1)
   })
   .finally(async () => {
